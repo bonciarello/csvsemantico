@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Convertitore CSV → JSON-LD — Mapping semantico per Linked Data</title>
+  <meta name="description" content="Converti file CSV in JSON-LD strutturato con un editor di mapping semantico. Associa colonne a proprietà RDF di Schema.org, FOAF, DCAT e genera documenti Linked Data validi.">
+
+  <link rel="canonical" href="https://cristianporco.it/app/convertitore-di-file-csv-a-json-ld-con-mapping-semantico/">
+
+  <meta property="og:title" content="Convertitore CSV → JSON-LD — Mapping semantico per Linked Data">
+  <meta property="og:description" content="Converti file CSV in JSON-LD con mapping semantico. Supporta Schema.org, FOAF, DCAT e contesti personalizzati.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://cristianporco.it/app/convertitore-di-file-csv-a-json-ld-con-mapping-semantico/">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:ital,opsz,wght@0,14..32,400..600;1,14..32,400..600&family=JetBrains+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="static/style.css">
+  <base href="./">
+</head>
+<body>
+
+  <a href="#main-content" class="skip-link">Salta al contenuto principale</a>
+
+  <!-- Header -->
+  <header class="site-header" role="banner">
+    <div class="header-inner">
+      <div class="logo-area">
+        <svg class="logo-icon" width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+          <circle cx="10" cy="10" r="5" fill="#6C5CE7" opacity="0.9"/>
+          <circle cx="22" cy="10" r="4" fill="#6C5CE7" opacity="0.7"/>
+          <circle cx="16" cy="22" r="6" fill="#00CEC9" opacity="0.8"/>
+          <line x1="13" y1="13" x2="18" y2="18" stroke="#6C5CE7" stroke-width="1.5" stroke-dasharray="2 2"/>
+          <line x1="19" y1="13" x2="17" y2="18" stroke="#A29BFE" stroke-width="1.5" stroke-dasharray="2 2"/>
+        </svg>
+        <div class="logo-text">
+          <span class="logo-title">CSV <span class="logo-arrow">→</span> JSON‑LD</span>
+          <span class="logo-subtitle">Mapping semantico</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main id="main-content" class="main-content" role="main">
+
+    <!-- Step Indicator -->
+    <nav class="steps-bar" aria-label="Passaggi">
+      <ol class="steps-list">
+        <li class="step-item active" data-step="1">
+          <span class="step-number">1</span>
+          <span class="step-label">Carica CSV</span>
+        </li>
+        <li class="step-item" data-step="2">
+          <span class="step-number">2</span>
+          <span class="step-label">Scegli contesto</span>
+        </li>
+        <li class="step-item" data-step="3">
+          <span class="step-number">3</span>
+          <span class="step-label">Mappa colonne</span>
+        </li>
+        <li class="step-item" data-step="4">
+          <span class="step-number">4</span>
+          <span class="step-label">Converti &amp; scarica</span>
+        </li>
+      </ol>
+    </nav>
+
+    <!-- Step 1: Upload CSV -->
+    <section class="panel step-panel active" id="panel-step-1" aria-labelledby="heading-step-1">
+      <h2 id="heading-step-1" class="panel-title">Carica il tuo file CSV</h2>
+      <p class="panel-desc">Trascina un file CSV qui o clicca per selezionarlo. Il delimitatore viene rilevato automaticamente.</p>
+
+      <div class="upload-zone" id="upload-zone" role="button" tabindex="0"
+           aria-label="Carica file CSV — trascina qui o clicca per selezionare">
+        <div class="upload-zone-inner">
+          <svg class="upload-icon" width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+            <rect x="8" y="12" width="32" height="28" rx="3" stroke="#6C5CE7" stroke-width="2" fill="none"/>
+            <path d="M16 12V6a2 2 0 012-2h12a2 2 0 012 2v6" stroke="#6C5CE7" stroke-width="2" fill="none"/>
+            <line x1="18" y1="22" x2="30" y2="22" stroke="#A29BFE" stroke-width="2" stroke-linecap="round"/>
+            <line x1="18" y1="28" x2="26" y2="28" stroke="#A29BFE" stroke-width="2" stroke-linecap="round"/>
+            <polyline points="28,16 24,20 20,16" stroke="#00CEC9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <p class="upload-text"><strong>Trascina il CSV qui</strong> oppure <span class="upload-link">sfoglia i file</span></p>
+          <p class="upload-hint">CSV, TSV, TXT — max 10 MB</p>
+        </div>
+        <input type="file" id="csv-file-input" accept=".csv,.tsv,.txt,text/csv,text/tab-separated-values" hidden>
+      </div>
+
+      <div id="csv-preview" class="csv-preview hidden" aria-live="polite">
+        <div class="preview-header">
+          <h3 class="preview-title">Anteprima CSV <span id="row-count-display"></span></h3>
+          <button type="button" class="btn btn-ghost btn-sm" id="btn-change-file">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 2h5l2 2h5v10H2V2z" stroke="currentColor" stroke-width="1.5"/><path d="M10 12V9H6v3" stroke="currentColor" stroke-width="1.5"/><path d="M8 9v3" stroke="currentColor" stroke-width="1.5"/></svg>
+            Cambia file
+          </button>
+        </div>
+        <div class="table-wrapper" tabindex="0" role="region" aria-label="Anteprima dati CSV">
+          <table class="preview-table" id="preview-table">
+            <thead></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="upload-error" class="alert alert-error hidden" role="alert"></div>
+    </section>
+
+    <!-- Step 2: Choose Context -->
+    <section class="panel step-panel" id="panel-step-2" aria-labelledby="heading-step-2">
+      <h2 id="heading-step-2" class="panel-title">Scegli il contesto JSON‑LD</h2>
+      <p class="panel-desc">Il contesto definisce il vocabolario semantico: quali proprietà puoi usare e a quali URI RDF corrispondono.</p>
+
+      <div class="context-grid" id="context-grid" role="radiogroup" aria-label="Contesti predefiniti">
+        <!-- Populated by JS -->
+        <div class="context-card context-card-loading" aria-busy="true">
+          <div class="skeleton skeleton-title"></div>
+          <div class="skeleton skeleton-text"></div>
+          <div class="skeleton skeleton-text short"></div>
+        </div>
+        <div class="context-card context-card-loading" aria-busy="true">
+          <div class="skeleton skeleton-title"></div>
+          <div class="skeleton skeleton-text"></div>
+          <div class="skeleton skeleton-text short"></div>
+        </div>
+        <div class="context-card context-card-loading" aria-busy="true">
+          <div class="skeleton skeleton-title"></div>
+          <div class="skeleton skeleton-text"></div>
+          <div class="skeleton skeleton-text short"></div>
+        </div>
+      </div>
+
+      <div class="divider">
+        <span class="divider-text">oppure</span>
+      </div>
+
+      <div class="custom-context">
+        <label for="custom-context-file" class="btn btn-outline">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 2v10M4 8l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Carica contesto personalizzato (JSON)
+        </label>
+        <input type="file" id="custom-context-file" accept=".json,application/json" hidden>
+        <span id="custom-context-name" class="custom-context-label"></span>
+      </div>
+
+      <div id="context-error" class="alert alert-error hidden" role="alert"></div>
+    </section>
+
+    <!-- Step 3: Map Columns to Properties -->
+    <section class="panel step-panel" id="panel-step-3" aria-labelledby="heading-step-3">
+      <h2 id="heading-step-3" class="panel-title">Mappa le colonne alle proprietà</h2>
+      <p class="panel-desc">Associa ogni colonna del CSV a una proprietà del contesto. Specifica anche il tipo di dato per una corretta conversione.</p>
+
+      <div class="mapping-options">
+        <div class="form-group">
+          <label for="entity-type">Tipo entità (@type)</label>
+          <div class="input-with-select">
+            <input type="text" id="entity-type" class="input"
+                   placeholder="es. Person, Dataset, Organization"
+                   list="entity-type-suggestions"
+                   aria-describedby="entity-type-help">
+            <datalist id="entity-type-suggestions"></datalist>
+          </div>
+          <p id="entity-type-help" class="field-hint">Il tipo RDF da assegnare a ogni riga (opzionale).</p>
+        </div>
+
+        <div class="form-group">
+          <label for="base-iri">IRI base (@id)</label>
+          <input type="url" id="base-iri" class="input"
+                 placeholder="https://example.org/data/"
+                 aria-describedby="base-iri-help">
+          <p id="base-iri-help" class="field-hint">Prefisso URL per generare identificatori univoci per ogni entità.</p>
+        </div>
+      </div>
+
+      <div class="mapping-area" id="mapping-area" aria-label="Editor di mapping colonne-proprietà">
+        <div class="mapping-empty" id="mapping-empty">
+          <svg width="64" height="64" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+            <circle cx="20" cy="32" r="8" stroke="#A29BFE" stroke-width="2" fill="#F8F7FF"/>
+            <circle cx="44" cy="20" r="8" stroke="#A29BFE" stroke-width="2" fill="#F8F7FF"/>
+            <circle cx="44" cy="44" r="8" stroke="#A29BFE" stroke-width="2" fill="#F8F7FF"/>
+            <line x1="27" y1="28" x2="37" y2="22" stroke="#DFE6E9" stroke-width="1.5" stroke-dasharray="4 3"/>
+            <line x1="27" y1="34" x2="37" y2="40" stroke="#DFE6E9" stroke-width="1.5" stroke-dasharray="4 3"/>
+            <text x="20" y="35" text-anchor="middle" font-size="6" fill="#6C5CE7" font-family="monospace">col</text>
+            <text x="44" y="23" text-anchor="middle" font-size="6" fill="#00CEC9" font-family="monospace">prop</text>
+            <text x="44" y="47" text-anchor="middle" font-size="6" fill="#00CEC9" font-family="monospace">prop</text>
+          </svg>
+          <p>Carica un CSV e scegli un contesto per iniziare il mapping.</p>
+        </div>
+
+        <div class="mapping-list hidden" id="mapping-list">
+          <!-- Populated by JS: each mapping row has column name + property selector + datatype selector -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Step 4: Convert & Download -->
+    <section class="panel step-panel" id="panel-step-4" aria-labelledby="heading-step-4">
+      <h2 id="heading-step-4" class="panel-title">Converti e scarica</h2>
+      <p class="panel-desc">Avvia la conversione. Il JSON‑LD generato viene validato ed è pronto per il download.</p>
+
+      <div class="convert-actions">
+        <button type="button" class="btn btn-primary btn-lg" id="btn-convert" disabled>
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5"/>
+            <polyline points="7,8 10,5 13,8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="10" y1="5" x2="10" y2="13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          Converti in JSON‑LD
+        </button>
+
+        <div id="progress-area" class="progress-area hidden" aria-live="polite">
+          <div class="progress-bar-wrapper">
+            <div class="progress-bar" id="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+              <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+            </div>
+            <span class="progress-text" id="progress-text">0%</span>
+          </div>
+          <p class="progress-status" id="progress-status"></p>
+        </div>
+      </div>
+
+      <div id="result-area" class="result-area hidden" aria-live="polite">
+        <div class="result-header">
+          <h3 class="result-title">JSON‑LD generato</h3>
+          <div class="result-actions">
+            <button type="button" class="btn btn-primary btn-sm" id="btn-download">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 14h8M8 2v9M5 8l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Scarica .jsonld
+            </button>
+            <button type="button" class="btn btn-ghost btn-sm" id="btn-copy">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="4" y="4" width="9" height="11" rx="1" stroke="currentColor" stroke-width="1.5"/><path d="M11 4V3a1 1 0 00-1-1H3a1 1 0 00-1 1v9a1 1 0 001 1h1" stroke="currentColor" stroke-width="1.5"/></svg>
+              Copia
+            </button>
+          </div>
+        </div>
+
+        <div id="validation-info" class="validation-info hidden" role="status"></div>
+
+        <div class="code-block" tabindex="0" role="region" aria-label="Anteprima JSON-LD">
+          <pre><code id="jsonld-output" class="language-json"></code></pre>
+        </div>
+      </div>
+
+      <div id="convert-error" class="alert alert-error hidden" role="alert"></div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer" role="contentinfo">
+    <p>Convertitore CSV → JSON‑LD &mdash; genera documenti Linked Data strutturati con mapping semantico configurabile.</p>
+  </footer>
+
+  <!-- Toast notification -->
+  <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Convertitore CSV → JSON-LD",
+    "url": "https://cristianporco.it/app/convertitore-di-file-csv-a-json-ld-con-mapping-semantico/",
+    "description": "Tool web per convertire file CSV in JSON-LD (Linked Data) con editor di mapping semantico.",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Web",
+    "offers": {
+      "@type": "Offer",
+      "price": "0"
+    }
+  }
+  </script>
+
+  <script src="static/script.js"></script>
+</body>
+</html>

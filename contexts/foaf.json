@@ -1,0 +1,38 @@
+{
+  "@context": {
+    "@vocab": "http://xmlns.com/foaf/0.1/",
+    "foaf": "http://xmlns.com/foaf/0.1/",
+    "name": "http://xmlns.com/foaf/0.1/name",
+    "firstName": "http://xmlns.com/foaf/0.1/firstName",
+    "familyName": "http://xmlns.com/foaf/0.1/familyName",
+    "nick": "http://xmlns.com/foaf/0.1/nick",
+    "mbox": "http://xmlns.com/foaf/0.1/mbox",
+    "mbox_sha1sum": "http://xmlns.com/foaf/0.1/mbox_sha1sum",
+    "homepage": "http://xmlns.com/foaf/0.1/homepage",
+    "workplaceHomepage": "http://xmlns.com/foaf/0.1/workplaceHomepage",
+    "weblog": "http://xmlns.com/foaf/0.1/weblog",
+    "img": "http://xmlns.com/foaf/0.1/img",
+    "depiction": "http://xmlns.com/foaf/0.1/depiction",
+    "knows": "http://xmlns.com/foaf/0.1/knows",
+    "interest": "http://xmlns.com/foaf/0.1/interest",
+    "topic_interest": "http://xmlns.com/foaf/0.1/topic_interest",
+    "based_near": "http://xmlns.com/foaf/0.1/based_near",
+    "age": "http://xmlns.com/foaf/0.1/age",
+    "birthday": "http://xmlns.com/foaf/0.1/birthday",
+    "gender": "http://xmlns.com/foaf/0.1/gender",
+    "phone": "http://xmlns.com/foaf/0.1/phone",
+    "status": "http://xmlns.com/foaf/0.1/status",
+    "organization": "http://xmlns.com/foaf/0.1/organization",
+    "member": "http://xmlns.com/foaf/0.1/member"
+  },
+  "commonTypes": [
+    "Agent",
+    "Person",
+    "Organization",
+    "Group",
+    "Document",
+    "Image",
+    "OnlineAccount",
+    "Project"
+  ]
+}
